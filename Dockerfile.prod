@@ -1,0 +1,14 @@
+FROM golang:1-alpine3.10 as stage01
+
+WORKDIR /home/go_user/app
+COPY ["go.mod", "main.go", "build.sh", "./"]
+RUN go build -ldflags "-s -w" main.go
+
+# ---------------------------------------------
+FROM scratch as stage02
+
+WORKDIR /root
+
+COPY --from=stage01 /home/go_user/app/main .
+
+ENTRYPOINT [ "./main" ] 
